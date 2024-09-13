@@ -29,7 +29,9 @@ class Strategy:
             print(f"Error {response.status_code}: {response.text}")
             return None
 
-    def order(self):
+    def order(self, low_H4, curr_low, curr_close, prev_high, prev_low, M15_data):
+
+        "Strategy Here"
 
         long_signal = False
 
@@ -55,27 +57,25 @@ class Strategy:
         while True:
             try:
                 candles_H4 = get_candles_data_H4()
-                candles_15 = get_candles_data_15()
+                candles_15 = get_candles_15_candle()
 
                 for i15 in candles_15:
                     M15_data.append(i15)
 
-
                 for i4 in candles_H4:
                    H4_data.append(i4)
 
+                curr_candle = M15_data[13]
+                prev_candle = M15_data[12]
+                data_H4 = H4_data[2]
 
-                data_15 = M15_data[13]
-                low_15 = data_15['mid']['l']
-                high_15 = data_15['mid']['h']
-                print(f"15 min Low: {low_15}")
-                print(f"15 min High: {high_15}")
-
-                data_H4 = H4_data[3]
+                curr_low = curr_candle['mid']['l']
+                curr_close = curr_candle['mid']['c']
+                prev_high = prev_candle['mid']['h']
+                prev_low = prev_candle['mid']['l']
                 low_H4 = data_H4['mid']['l']
-                print(f"4 Hour Low: {low_H4}")
 
-                #order()
+                order(low_H4, curr_low, curr_close, prev_high, prev_low, M15_data)
 
                 time.sleep(1)
 
@@ -84,8 +84,8 @@ class Strategy:
 
                 for i4 in candles_H4:
                    H4_data.remove(i4)
-
-                time.sleep(30)
+                
+                time.sleep(1)
 
             except KeyboardInterrupt:
                 print("Ending Session")
